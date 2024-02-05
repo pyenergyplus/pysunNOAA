@@ -82,3 +82,14 @@ def test_geom_mean_anom_sun_deg(jul_century, expected):
 def test_ent_earth_orbit(jul_century, expected):
     result = noaa.eccent_earth_orbit(jul_century)
     almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "jul_century, geom_mean_anom_sun_value, expected",
+    [
+    (0.104689824321243, 4126.22229222893, 0.446799918175887), # jul_century, geom_mean_anom_sun_value, expected
+    (0.237209160392435, 8896.83359556751, -1.85407782292307), # jul_century, geom_mean_anom_sun_value, expected
+    ]
+)
+def test_sun_eq_of_ctr(jul_century, geom_mean_anom_sun_value, expected):
+    result = noaa.sun_eq_of_ctr(jul_century, geom_mean_anom_sun_value)
+    almostequal(result, expected)
