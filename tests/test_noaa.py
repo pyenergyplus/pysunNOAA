@@ -57,6 +57,17 @@ def test_juliancentury(jul_day, expected):
     (0.237209160392435, 180.178861916105), # jul_century, expected
     ]
 )
-def test_Geom_Mean_Long_Sun_deg(jul_century, expected):
-    result = noaa.Geom_Mean_Long_Sun_deg(jul_century)
+def test_geom_mean_long_sun_deg(jul_century, expected):
+    result = noaa.geom_mean_long_sun_deg(jul_century)
+    almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "jul_century, expected",
+    [
+    (0.104688683550086, 4126.22229222893), # jul_century, expected
+    (0.23720916, 8896.83359556751), # jul_century, expected
+    ]
+)
+def test_geom_mean_anom_sun_deg(jul_century, expected):
+    result = noaa.geom_mean_anom_sun_deg(jul_century)
     almostequal(result, expected)

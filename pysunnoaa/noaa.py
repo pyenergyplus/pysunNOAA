@@ -15,17 +15,18 @@ def juliancentury(jul_day):
     """g2"""
     return (jul_day-2451545)/36525
 
-def Geom_Mean_Long_Sun_deg(jul_century):
+def geom_mean_long_sun_deg(jul_century):
     """i2"""
     return (280.46646 + jul_century * (36000.76983 + jul_century * 0.0003032)) % 360
 
-def Geom_Mean_Anom_Sun_deg():
-    """"""
-    pass
+def geom_mean_anom_sun_deg(jul_century):
+    """j2"""
+    return 357.52911 + jul_century * (35999.05029 - 0.0001537 * jul_century)
     
-func_f2 = julianday
-func_g2 = juliancentury
-func_i2 = Geom_Mean_Long_Sun_deg
+func_f2 = julianday #1
+func_g2 = juliancentury #2
+func_i2 = geom_mean_long_sun_deg #3
+func_j2 = geom_mean_anom_sun_deg #4
 
 def main():
     latitude = b3 = 40
