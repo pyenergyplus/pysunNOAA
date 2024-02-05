@@ -93,3 +93,36 @@ def test_ent_earth_orbit(jul_century, expected):
 def test_sun_eq_of_ctr(jul_century, geom_mean_anom_sun_value, expected):
     result = noaa.sun_eq_of_ctr(jul_century, geom_mean_anom_sun_value)
     almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "geom_mean_long_sun_deg_value, sun_eq_of_ctr_value, expected",
+    [
+    (89.3396636153339, 0.446799918175887, 89.7864635335097), # geom_mean_long_sun_deg_value, sun_eq_of_ctr_value, expected
+    (180.178861916105, -1.85407782292307, 178.324784093182), # geom_mean_long_sun_deg_value, sun_eq_of_ctr_value, expected
+    ]
+)
+def test_sun_true_long_deg(geom_mean_long_sun_deg_value, sun_eq_of_ctr_value, expected):
+    result = noaa.sun_true_long_deg(geom_mean_long_sun_deg_value, sun_eq_of_ctr_value)
+    almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "geom_mean_anom_sun_deg_value, sun_eq_of_ctr_value, expected",
+    [
+    (4126.22229222893, 0.446799918175887, 4126.6690921471), # geom_mean_anom_sun_deg_value, sun_eq_of_ctr_value, expected
+    (8896.83359556751, -1.85407782292307, 8894.97951774459), # geom_mean_anom_sun_deg_value, sun_eq_of_ctr_value, expected
+    ]
+)
+def test_sun_true_anom_deg(geom_mean_anom_sun_deg_value, sun_eq_of_ctr_value, expected):
+    result = noaa.sun_true_anom_deg(geom_mean_anom_sun_deg_value, sun_eq_of_ctr_value)
+    almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "eccent_earth_orbit_value, sun_true_anom_deg_value, expected",
+    [
+    (0.016704231813213, 4126.6690921471, 1.01624008495444), # eccent_earth_orbit_value, sun_true_anom_deg_value, expected
+    (0.0166986553093454, 8894.97951774459, 1.00406747122742), # eccent_earth_orbit_value, sun_true_anom_deg_value, expected
+    ]
+)
+def test_sun_rad_vector_AUs(eccent_earth_orbit_value, sun_true_anom_deg_value, expected):
+    result = noaa. sun_rad_vector_AUs(eccent_earth_orbit_value, sun_true_anom_deg_value)
+    almostequal(result, expected)
