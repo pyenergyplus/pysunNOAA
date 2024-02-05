@@ -23,10 +23,15 @@ def geom_mean_anom_sun_deg(jul_century):
     """j2"""
     return 357.52911 + jul_century * (35999.05029 - 0.0001537 * jul_century)
     
+def eccent_earth_orbit(jul_century):
+    """k2"""
+    return 0.016708634 - jul_century * (0.000042037 + 0.0000001267 * jul_century)
+
 func_f2 = julianday #1
 func_g2 = juliancentury #2
 func_i2 = geom_mean_long_sun_deg #3
 func_j2 = geom_mean_anom_sun_deg #4
+func_k2 = eccent_earth_orbit #5
 
 def main():
     latitude = b3 = 40
