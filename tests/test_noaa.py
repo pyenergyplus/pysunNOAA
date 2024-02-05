@@ -120,9 +120,20 @@ def test_sun_true_anom_deg(geom_mean_anom_sun_deg_value, sun_eq_of_ctr_value, ex
     "eccent_earth_orbit_value, sun_true_anom_deg_value, expected",
     [
     (0.016704231813213, 4126.6690921471, 1.01624008495444), # eccent_earth_orbit_value, sun_true_anom_deg_value, expected
-    (0.0166986553093454, 8894.97951774459, 1.00406747122742), # eccent_earth_orbit_value, sun_true_anom_deg_value, expected
+    (0.0166986553093454, 8894.97951774459, 1.0040674712274), # eccent_earth_orbit_value, sun_true_anom_deg_value, expected
     ]
 )
 def test_sun_rad_vector_AUs(eccent_earth_orbit_value, sun_true_anom_deg_value, expected):
     result = noaa. sun_rad_vector_AUs(eccent_earth_orbit_value, sun_true_anom_deg_value)
+    almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "juliancentury_value, sun_true_long_deg_value, expected",
+    [
+    (0.10468868, 89.7864635335097, 89.7854391814863), # juliancentury_value, sun_true_long_deg_value, expected
+    (0.23720916, 178.324784093182, 178.316980310654), # juliancentury_value, sun_true_long_deg_value, expected
+    ]
+)
+def test_sun_app_long_deg(juliancentury_value, sun_true_long_deg_value, expected):
+    result = noaa.sun_app_long_deg(juliancentury_value, sun_true_long_deg_value)
     almostequal(result, expected)
