@@ -65,6 +65,20 @@ def mean_obliq_ecliptic_deg(juliancentury_value):
     g2 = juliancentury_value
     return 23 + (26 + ((21.448 - g2 * (46.815 + g2 * (0.00059 - g2 * 0.001813)))) / 60) /  60
 
+def obliq_corr_deg(juliancentury_value, mean_obliq_ecliptic_deg_value):
+    """12. r2"""
+    g2 = juliancentury_value
+    q2 = mean_obliq_ecliptic_deg_value
+    return q2 + 0.00256 * math.cos(math.radians(125.04 - 1934.136 * g2))
+
+def sun_rt_ascen_deg(sun_app_long_deg_value, obliq_corr_deg_value):
+    """13. s2"""
+    p2 = sun_app_long_deg_value 
+    r2 = obliq_corr_deg_value
+    y = math.cos(math.radians(r2)) * math.sin(math.radians(p2))
+    x = math.cos(math.radians(p2))
+    return math.degrees(math.atan2(y, x))
+
 func_f2 = julianday #1
 func_g2 = juliancentury #2
 func_i2 = geom_mean_long_sun_deg #3
@@ -76,6 +90,7 @@ func_n2 = sun_true_anom_deg #8
 func_o2 = sun_rad_vector_AUs #9
 func_p2 = sun_app_long_deg #10
 func_q2 = mean_obliq_ecliptic_deg #11
+func_r2 = obliq_corr_deg #12
 
 def main():
     latitude = b3 = 40
@@ -95,6 +110,7 @@ def main():
     o2 = func_o2(k2, n2)
     p2 = func_p2(g2, m2)
     q2 = func_q2(g2)
+    r2 = func_r2(g2, q2)
     print(f"{f2=}")
     print(f"{g2=}")
     print(f"{i2=}")
@@ -106,6 +122,7 @@ def main():
     print(f"{o2=}")
     print(f"{p2=}")
     print(f"{q2=}")
+    print(f"{r2=}")
 
 if __name__ == '__main__':
     main()

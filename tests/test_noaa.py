@@ -148,3 +148,26 @@ def test_sun_app_long_deg(juliancentury_value, sun_true_long_deg_value, expected
 def test_mean_obliq_ecliptic_deg(juliancentury_value, expected):
     result = noaa.mean_obliq_ecliptic_deg(juliancentury_value)
     almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "juliancentury_value, mean_obliq_ecliptic_deg_value, expected",
+    [
+    (0.10468868, 23.4379297208038, 23.4384863293544), # juliancentury_value, mean_obliq_ecliptic_deg_value, expected
+    (0.23720916, 23.4362064011546, 23.4385024897594), # juliancentury_value, mean_obliq_ecliptic_deg_value, expected
+    ]
+)
+def test_obliq_corr_deg(juliancentury_value, mean_obliq_ecliptic_deg_value, expected):
+    result = noaa.obliq_corr_deg(juliancentury_value, mean_obliq_ecliptic_deg_value)
+    almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "sun_app_long_deg_value, mean_obliq_ecliptic_deg_value, expected",
+    [
+    (89.7854391814863, 23.4384863293544, 89.7661433042803), # sun_app_long_deg_value, mean_obliq_ecliptic_deg_value, expected
+    (178.316980310654, 23.4385024897594, 178.455780149553), # sun_app_long_deg_value, mean_obliq_ecliptic_deg_value, expected
+    ]
+)
+def test_sun_rt_ascen_deg(sun_app_long_deg_value, mean_obliq_ecliptic_deg_value, expected):
+    print(sun_app_long_deg_value, mean_obliq_ecliptic_deg_value)
+    result = noaa.sun_rt_ascen_deg(sun_app_long_deg_value, mean_obliq_ecliptic_deg_value)
+    almostequal(result, expected)
