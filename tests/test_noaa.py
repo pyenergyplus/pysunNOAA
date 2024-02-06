@@ -171,3 +171,36 @@ def test_sun_rt_ascen_deg(sun_app_long_deg_value, mean_obliq_ecliptic_deg_value,
     print(sun_app_long_deg_value, mean_obliq_ecliptic_deg_value)
     result = noaa.sun_rt_ascen_deg(sun_app_long_deg_value, mean_obliq_ecliptic_deg_value)
     almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "sun_app_long_deg_value, obliq_corr_deg_value, expected",
+    [
+    (89.7854391814863, 23.4384863293544, 23.4383121595139), # sun_app_long_deg_value, obliq_corr_deg_value, expected
+    (178.316980310654, 23.4385024897594, 0.66936449061751), # sun_app_long_deg_value, obliq_corr_deg_value, expected
+    ]
+)
+def test_sun_declin_deg(sun_app_long_deg_value, obliq_corr_deg_value, expected):
+    result = noaa.sun_declin_deg(sun_app_long_deg_value, obliq_corr_deg_value)
+    almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "obliq_corr_deg_value, expected",
+    [
+    (23.4384863293544, 0.0430314901072543), # obliq_corr_deg_value, expected
+    (23.4385024897594, 0.0430315511340247), # obliq_corr_deg_value, expected
+    ]
+)
+def test_var_y(obliq_corr_deg_value, expected):
+    result = noaa.var_y(obliq_corr_deg_value)
+    almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "geom_mean_long_sun_deg_value, geom_mean_anom_sun_deg_value, eccent_earth_orbit_value, var_y_value, expected",
+    [
+    (89.3396636153339, 4126.22229222893, 0.016704231813213, 0.0430314901072543, -1.70630784072322), # geom_mean_long_sun_deg_value, geom_mean_anom_sun_deg_value, eccent_earth_orbit_value, var_y_value, expected
+    (180.178861916105, 8896.83359556751, 0.0166986553093454, 0.0430315511340247, 6.83497572573191), # geom_mean_long_sun_deg_value, geom_mean_anom_sun_deg_value, eccent_earth_orbit_value, var_y_value, expected
+    ]
+)
+def test_eq_of_time_minutes(geom_mean_long_sun_deg_value, geom_mean_anom_sun_deg_value, eccent_earth_orbit_value, var_y_value, expected):
+    result = noaa.eq_of_time_minutes(geom_mean_long_sun_deg_value, geom_mean_anom_sun_deg_value, eccent_earth_orbit_value, var_y_value)
+    almostequal(result, expected)
