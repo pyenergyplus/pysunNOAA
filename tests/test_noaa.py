@@ -137,3 +137,14 @@ def test_sun_rad_vector_AUs(eccent_earth_orbit_value, sun_true_anom_deg_value, e
 def test_sun_app_long_deg(juliancentury_value, sun_true_long_deg_value, expected):
     result = noaa.sun_app_long_deg(juliancentury_value, sun_true_long_deg_value)
     almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "juliancentury_value, expected",
+    [
+    (0.10468868, 23.4379297208038), # juliancentury_value, expected
+    (0.23720916, 23.4362064011546), # juliancentury_value, expected
+    ]
+)
+def test_mean_obliq_ecliptic_deg(juliancentury_value, expected):
+    result = noaa.mean_obliq_ecliptic_deg(juliancentury_value)
+    almostequal(result, expected)
