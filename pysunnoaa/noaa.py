@@ -7,6 +7,27 @@ import julian
 def add2(a):
     return a + 2 
 
+def datetime_midnight(dt):
+    """return the dt with time set to 00:00:00"""
+    year = dt.year
+    month = dt.month
+    day = dt.day
+    return datetime.datetime(year, month, day)
+
+def dayfraction2datetime(dayfraction, datetime_day=None):
+    """dayfraction=0.5 returns 12pm"""
+    if not datetime_day:
+        datetime_day = datetime.datetime(2001, 1, 1)
+    dt = datetime_midnight(datetime_day)
+    return dt + datetime.timedelta(days=dayfraction)
+
+def dayfraction2dateformat(dayfraction, datetime_day=None, t_format=None):
+    """dayfraction=0.5 returns 12pm"""
+    if not t_format:
+        t_format = "%H:%M:%S"
+    dt = dayfraction2datetime(dayfraction, datetime_day)
+    return dt.strftime(t_format)
+        
 def julianday(dt, timezone=0):
     """return the julain day for the datetime
 
@@ -98,6 +119,30 @@ def eq_of_time_minutes(geom_mean_long_sun_deg_value, geom_mean_anom_sun_deg_valu
     u2 = var_y_value
     return 4 * math.degrees(u2 * math.sin(2 * math.radians(i2)) - 2 * k2 * math.sin(math.radians(j2)) + 4 *  k2 * u2 * math.sin(math.radians(j2)) * math.cos(2 * math.radians(i2)) - 0.5 * u2 * u2 * math.     sin(4 * math.radians(i2)) - 1.25 * k2 * k2 * math.sin(2 * math.radians(j2)))
 
+def ha_sunrise_deg(latitude, sun_declin_deg_value):
+    """17. w2"""
+    fixed_b3 = latitude
+    t2 = sun_declin_deg_value
+    return math.degrees(math.acos(math.cos(math.radians(90.833)) / (math.cos(math.radians(fixed_b3)) * math. cos(math.radians(t2))) - math.tan(math.radians(fixed_b3)) * math.tan(math.radians(t2))))
+
+def solar_noon_lst(longitude, time_zone, eq_of_time_minutes_value):
+    """18. x2"""
+    fixed_b4 = longitude
+    fixed_b5 = time_zone
+    v2 = eq_of_time_minutes_value
+    return (720 - 4 * fixed_b4 - v2 + fixed_b5 * 60)/1440
+
+def sunrise_time_lst(ha_sunrise_deg_value, solar_noon_lst_value):
+    """19. y2"""
+    w2 = ha_sunrise_deg_value
+    x2 = solar_noon_lst_value
+    return x2 - w2 * 4 / 1440
+
+def sunset_time_lst(ha_sunrise_deg_value, solar_noon_lst_value):
+    """20. z2"""
+    w2 = ha_sunrise_deg_value
+    x2 = solar_noon_lst_value
+    return x2 + w2 * 4 / 1440
 
 func_f2 = julianday #1
 func_g2 = juliancentury #2
@@ -115,11 +160,14 @@ func_s2 = sun_rt_ascen_deg #13
 func_t2 = sun_declin_deg #14
 func_u2 = var_y #15
 func_v2 = eq_of_time_minutes #16
+func_w2 = ha_sunrise_deg #17
+func_x2 = solar_noon_lst #18
+func_y2 = sunrise_time_lst #19
 
 def main():
-    latitude = b3 = 40
-    longitude = b4 = -105
-    time_zone = b5 = -6
+    latitude = fixed_b3 = 40
+    longitude = fixed_b4 = -105
+    time_zone = fixed_b5 = -6
     date = b7 = d2 = datetime.datetime(2010, 6, 21, 0, 6)
     e2 = date
     f2 = func_f2(e2, time_zone)
@@ -139,6 +187,9 @@ def main():
     t2 = func_t2(p2, r2)
     u2 = func_u2(r2)
     v2 = func_v2(i2, j2, k2, u2)
+    w2 = func_w2(fixed_b3, t2)
+    x2 = func_x2(fixed_b4, fixed_b5, v2)
+    y2 = func_y2(w2, x2)
 
     print(f"{f2=}")
     print(f"{g2=}")
@@ -156,6 +207,10 @@ def main():
     print(f"{t2=}")
     print(f"{u2=}")
     print(f"{v2=}")
+    print(f"{w2=}")
+    print(f"{x2=}, x2={dayfraction2dateformat(x2)}")
+    print(f"{y2=}")
+    print(f"{y2=}, y2={dayfraction2dateformat(y2)}")
 
 if __name__ == '__main__':
     main()

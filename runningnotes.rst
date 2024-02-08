@@ -6,7 +6,9 @@ Giving up on poetry for now.
 - using https://pypi.org/project/julian/ for julian day
 - matches test against https://aa.usno.navy.mil/data/JulianDate
 
-28 total functions
+- 28 total functions
+- completed 16 on 2024-02-06
+- 12 to go
 
 2024-02-01
 ==========

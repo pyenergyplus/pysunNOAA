@@ -29,6 +29,39 @@ def test_add2(a, expected):
     result == expected
 
 @pytest.mark.parametrize(
+    "dt, expected",
+    [
+    (datetime.datetime(2001, 10, 2, 5, 30, 35), datetime.datetime(2001, 10, 2)), # dt, expected
+    ]
+)
+def test_datetime_midnight(dt, expected):
+    result = noaa.datetime_midnight(dt)
+    assert result == expected
+
+@pytest.mark.parametrize(
+    "dayfraction, datetime_day, expected",
+    [
+    (0.25, datetime.datetime(2001, 10, 5, 10, 5), datetime.datetime(2001, 10, 5, 6)), # dayfraction, datetime_day, expected
+    (0.25, None, datetime.datetime(2001, 1, 1, 6)), # dayfraction, datetime_day, expected
+    (1 / 24 * 14, datetime.datetime(2001, 10, 5, 10, 5), datetime.datetime(2001, 10, 5, 14)), # dayfraction, datetime_day, expected
+    ])
+def test_dayfraction2datetime(dayfraction, datetime_day, expected):
+    result = noaa.dayfraction2datetime(dayfraction, datetime_day)
+    assert result == expected
+
+@pytest.mark.parametrize(
+    "dayfraction, datetime_day, t_format, expected",
+    [
+    (0.25, None, None, "06:00:00"), # dayfraction, datetime_day, t_format, expected
+    (0.25, None, "%H|%M|%S", "06|00|00"), # dayfraction, datetime_day, t_format, expected
+    (0.25, datetime.datetime(1900, 2, 3), "%H|%M|%S", "06|00|00"), # dayfraction, datetime_day, t_format, expected
+    ]
+)
+def test_dayfraction2dateformat(dayfraction, datetime_day, t_format, expected):
+    result = noaa.dayfraction2dateformat(dayfraction, datetime_day, t_format)
+    assert result == expected
+
+@pytest.mark.parametrize(
     "dt, timezone, expected",
     [
     (datetime.datetime(2010, 6, 21, 0, 6), -6, 2455368.75416667), # dt, timezone, expected
@@ -204,3 +237,50 @@ def test_var_y(obliq_corr_deg_value, expected):
 def test_eq_of_time_minutes(geom_mean_long_sun_deg_value, geom_mean_anom_sun_deg_value, eccent_earth_orbit_value, var_y_value, expected):
     result = noaa.eq_of_time_minutes(geom_mean_long_sun_deg_value, geom_mean_anom_sun_deg_value, eccent_earth_orbit_value, var_y_value)
     almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "latitude, sun_declin_deg_value, expected",
+    [
+    (40, 23.4383121595139, 112.610346376993), # latitude, sun_declin_deg_value, expected
+    (37.4219444444444, 0.66936449061751, 91.5613033434302), # latitude, sun_declin_deg_value, expected
+    ]
+)
+def test_ha_sunrise_deg(latitude, sun_declin_deg_value, expected):
+    result = noaa.ha_sunrise_deg(latitude, sun_declin_deg_value)
+    almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "longitude, time_zone, solar_noon_lst, expected",
+    [
+    (-105, -6, -1.70630784072322, 0.542851602667169), # longitude, time_zone, solar_noon_lst, expected
+    (-122.079583333333, -8, 6.83497572573191, 0.501030109449723), # longitude, time_zone, solar_noon_lst, expected
+    ]
+)
+def test_solar_noon_lst(longitude, time_zone, solar_noon_lst, expected):
+    result = noaa.solar_noon_lst(longitude, time_zone, solar_noon_lst)
+    almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "ha_sunrise_deg_value, solar_noon_lst_value, expected",
+    [
+    (112.610346376993, 0.542851602667169, 0.230045084953299), # ha_sunrise_deg_value, solar_noon_lst_value, expected
+    (91.5613033434302, 0.501030109449723, 0.246693155717973), # ha_sunrise_deg_value, solar_noon_lst_value, expected
+    ]
+)
+def test_sunrise_time_lst(ha_sunrise_deg_value, solar_noon_lst_value, expected):
+    result = noaa.sunrise_time_lst(ha_sunrise_deg_value, solar_noon_lst_value)
+    almostequal(result, expected)
+
+
+@pytest.mark.parametrize(
+    "ha_sunrise_deg_value, solar_noon_lst_value, expected",
+    [
+    (112.610346376993, 0.542851602667169, 0.855658120381039), # ha_sunrise_deg_value, solar_noon_lst_value, expected
+    (91.5613033434302, 0.501030109449723, 0.755367063181474), # ha_sunrise_deg_value, solar_noon_lst_value, expected
+    ]
+)
+def test_sunset_time_lst(ha_sunrise_deg_value, solar_noon_lst_value, expected):
+    result = noaa.sunset_time_lst(ha_sunrise_deg_value, solar_noon_lst_value)
+    almostequal(result, expected)
+
+
