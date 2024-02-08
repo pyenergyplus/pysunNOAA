@@ -144,6 +144,10 @@ def sunset_time_lst(ha_sunrise_deg_value, solar_noon_lst_value):
     x2 = solar_noon_lst_value
     return x2 + w2 * 4 / 1440
 
+def a();
+    """21. aa2"""
+    pass
+
 func_f2 = julianday #1
 func_g2 = juliancentury #2
 func_i2 = geom_mean_long_sun_deg #3
