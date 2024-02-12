@@ -62,6 +62,21 @@ def test_dayfraction2dateformat(dayfraction, datetime_day, t_format, expected):
     assert result == expected
 
 @pytest.mark.parametrize(
+    "dt, expected",
+    [
+    (datetime.datetime(2001, 1, 1, 6), 0.25), # dt, expected
+    (datetime.datetime(2001, 1, 1, 6, 30), 0.2708333333333333), # dt, expected
+    (datetime.datetime(2001, 1, 1, 13, 30,  22), 0.5627546296296296), # dt, expected
+    (datetime.datetime(2001, 1, 1, 13, 30,  22, 0), 0.5627546296296296), # dt, expected
+    (datetime.datetime(2001, 1, 1, 13, 30,  21, 999999), 0.5627546296180556), # dt, expected
+    ]
+)
+def test_datetime2dayfraction(dt, expected):
+    result = noaa.datetime2dayfraction(dt)
+    assert result == expected
+#     almostequal(result, expected)
+
+@pytest.mark.parametrize(
     "dt, timezone, expected",
     [
     (datetime.datetime(2010, 6, 21, 0, 6), -6, 2455368.75416667), # dt, timezone, expected
@@ -283,4 +298,67 @@ def test_sunset_time_lst(ha_sunrise_deg_value, solar_noon_lst_value, expected):
     result = noaa.sunset_time_lst(ha_sunrise_deg_value, solar_noon_lst_value)
     almostequal(result, expected)
 
+@pytest.mark.parametrize(
+    "ha_sunrise_deg_value, expected",
+    [
+    (112.610346376993, 900.882771015944), # ha_sunrise_deg_value, expected
+    (91.5613033434302, 732.4904267474416), # ha_sunrise_deg_value, expected
+    ]
+)
+def test_sunlight_duration_minutes(ha_sunrise_deg_value, expected):
+    result = noaa.sunlight_duration_minutes(ha_sunrise_deg_value)
+    assert result == expected
 
+@pytest.mark.parametrize(
+    "thedate, eq_of_time_minutes_value, longitude, time_zone, expected",
+    [
+    (datetime.datetime(2010,6, 21, 0, 6, 0), -1.70630784072322, -105, -6, 1384.29369215928), # thedate, eq_of_time_minutes_value, longitude, time_zone, expected
+    (datetime.datetime(2023, 9, 21, 5, 33, 0), 6.83497572573191, -122.079583333333, -8, 331.516642392399), # thedate, eq_of_time_minutes_value, longitude, time_zone, expected
+    ]
+)
+def test_true_solar_time_min(thedate, eq_of_time_minutes_value, longitude, time_zone, expected):
+    result = noaa.true_solar_time_min(thedate, eq_of_time_minutes_value, longitude, time_zone)
+    almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "true_solar_time_min_value, expected",
+    [
+    (1384.29369215928, 166.073423039819), # true_solar_time_min_value, expected
+    (331.516642392399, -97.1208394019004), # true_solar_time_min_value, expected
+    ]
+)
+def test_hour_angle_deg(true_solar_time_min_value, expected):
+    result = noaa.hour_angle_deg(true_solar_time_min_value)
+    almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "latitude, sun_declin_deg_value, hour_angle_deg_value, expected",
+    [
+    (40, 23.4383121595139, 166.073423039819, 115.245718494866), # latitude, sun_declin_deg_value, hour_angle_deg_value, expected
+    ]
+)
+def test_solar_zenith_angle_deg(latitude, sun_declin_deg_value, hour_angle_deg_value, expected):
+    result = noaa.solar_zenith_angle_deg(latitude, sun_declin_deg_value, hour_angle_deg_value)
+    almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "solar_zenith_angle_deg_value, expected",
+    [
+    (115.245718494866, -25.245718494866), # solar_zenith_angle_deg_value, expected
+    (95.2408647936783, -5.24086479367834), # solar_zenith_angle_deg_value, expected
+    ]
+)
+def test_solar_elevation_angle_deg(solar_zenith_angle_deg_value, expected):
+    result = noaa.solar_elevation_angle_deg(solar_zenith_angle_deg_value)
+    almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "solar_elevation_angle_deg_value, expected",
+    [
+    (-25.245718494866, 0.0122365205193627), # solar_elevation_angle_deg_value, expected
+    (-5.24086479367834, 0.0629045265211758), # solar_elevation_angle_deg_value, expected
+    ]
+)
+def test_approx_atmospheric_refraction_deg(solar_elevation_angle_deg_value, expected):
+    result = noaa.approx_atmospheric_refraction_deg(solar_elevation_angle_deg_value)
+    almostequal(result, expected)

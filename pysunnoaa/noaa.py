@@ -1,6 +1,7 @@
 """All the functions to calculate the sun postion using the NOAA spreadsheet"""
 
 import datetime
+import operator
 import math
 import julian
 
@@ -28,6 +29,16 @@ def dayfraction2dateformat(dayfraction, datetime_day=None, t_format=None):
     dt = dayfraction2datetime(dayfraction, datetime_day)
     return dt.strftime(t_format)
         
+def datetime2dayfraction(dt):
+    """return the draction of the time in the datetim"""
+    hour = dt.hour
+    hminute = dt.minute / 60.
+    hsecond = dt.second / 60. /60.
+    smicrosecond = dt.microsecond / 1e6
+    hmicrosecond= smicrosecond / 60. /60.
+    return (hour + hminute + hsecond + hmicrosecond) / 24.
+    
+
 def julianday(dt, timezone=0):
     """return the julain day for the datetime
 
@@ -41,7 +52,7 @@ def juliancentury(jul_day):
 
 def geom_mean_long_sun_deg(jul_century):
     """3. i2"""
-    return (280.46646 + jul_century * (36000.76983 + jul_century * 0.0003032)) % 360
+    return operator.mod((280.46646 + jul_century * (36000.76983 + jul_century * 0.0003032)), 360)
 
 def geom_mean_anom_sun_deg(jul_century):
     """4. j2"""
@@ -144,9 +155,58 @@ def sunset_time_lst(ha_sunrise_deg_value, solar_noon_lst_value):
     x2 = solar_noon_lst_value
     return x2 + w2 * 4 / 1440
 
-def a();
+def sunlight_duration_minutes(ha_sunrise_deg_value):
     """21. aa2"""
-    pass
+    w2 = ha_sunrise_deg_value
+    return 8 * w2
+
+
+def true_solar_time_min(thedate, eq_of_time_minutes_value, longitude, time_zone):
+    """22. ab2"""
+    time_past_local_midnight = datetime2dayfraction(thedate)
+    e2 = time_past_local_midnight
+    v2 = eq_of_time_minutes_value
+    fixed_b4 = longitude
+    fixed_b5 = time_zone
+    return operator.mod(e2 * 1440 + v2 + 4 * fixed_b4 - 60 * fixed_b5, 1440)
+
+
+def hour_angle_deg(true_solar_time_min_value):
+    """23. ac2"""
+    ab2 = true_solar_time_min_value
+    if (ab2 / 4) < 0:
+        return (ab2 / 4) + 180
+    else:
+        return (ab2 / 4) - 180
+
+def solar_zenith_angle_deg(latitude, sun_declin_deg_value, hour_angle_deg_value):
+    """24. ad2"""
+    fixed_b3 = latitude
+    t2 = sun_declin_deg_value
+    ac2 = hour_angle_deg_value
+    return math.degrees(math.acos(math.sin(math.radians(fixed_b3)) * math.sin(math.radians(t2)) + math.cos(math.radians(fixed_b3)) * math.cos(math.radians(t2)) * math.cos(math.radians(ac2))))
+
+def solar_elevation_angle_deg(solar_zenith_angle_deg_value):
+    """26. ae2"""
+    ad2 = solar_zenith_angle_deg_value
+    return 90 - ad2
+
+
+def approx_atmospheric_refraction_deg(solar_elevation_angle_deg_value):
+    """25. af2"""
+    ae2 = solar_elevation_angle_deg_value
+    if(ae2>85):
+        result = 0
+    elif(ae2>5):
+        result = 58.1/math.tan(math.radians(ae2))-0.07/math.power(math.tan(math.radians(ae2)),3)+0.000086/math.power(math.tan(math.radians(ae2)),5)
+    elif(ae2>-0.575):
+        result = 1735+ae2*(-518.2+ae2*(103.4+ae2*(-12.79+ae2*0.711)))
+    else:
+        result = -20.772/math.tan(math.radians(ae2))
+            
+        
+    
+    return result / 3600
 
 func_f2 = julianday #1
 func_g2 = juliancentury #2
@@ -167,13 +227,15 @@ func_v2 = eq_of_time_minutes #16
 func_w2 = ha_sunrise_deg #17
 func_x2 = solar_noon_lst #18
 func_y2 = sunrise_time_lst #19
+func_z2 = sunset_time_lst #20
+func_aa2 = sunlight_duration_minutes #21
 
 def main():
     latitude = fixed_b3 = 40
     longitude = fixed_b4 = -105
     time_zone = fixed_b5 = -6
-    date = b7 = d2 = datetime.datetime(2010, 6, 21, 0, 6)
-    e2 = date
+    thedate = b7 = d2 = datetime.datetime(2010, 6, 21, 0, 6)
+    e2 = thedate
     f2 = func_f2(e2, time_zone)
     g2 = func_g2(f2)
     i2 = func_i2(g2)
@@ -194,6 +256,8 @@ def main():
     w2 = func_w2(fixed_b3, t2)
     x2 = func_x2(fixed_b4, fixed_b5, v2)
     y2 = func_y2(w2, x2)
+    z2 = func_z2(w2, x2)
+    aa2 = func_aa2(w2)
 
     print(f"{f2=}")
     print(f"{g2=}")
@@ -215,6 +279,9 @@ def main():
     print(f"{x2=}, x2={dayfraction2dateformat(x2)}")
     print(f"{y2=}")
     print(f"{y2=}, y2={dayfraction2dateformat(y2)}")
+    print(f"{z2=}")
+    print(f"{z2=}, z2={dayfraction2dateformat(z2)}")
+    print(f"{aa2=}")
 
 if __name__ == '__main__':
     main()
