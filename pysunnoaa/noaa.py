@@ -259,6 +259,12 @@ func_y2 = sunrise_time_lst #19
 func_z2 = sunset_time_lst #20
 func_aa2 = sunlight_duration_minutes #21
 func_ab2 = true_solar_time_min #22
+func_ac2 = hour_angle_deg #23
+func_ad2 = solar_zenith_angle_deg #24
+func_ae2 = solar_elevation_angle_deg #25
+func_af2 = approx_atmospheric_refraction_deg #26
+func_ag2 = solar_elevation_corrected_for_atm_refraction_deg #27
+func_ah2 = solar_azimuth_angle_deg_cw_from_n #28
 
 def main():
     latitude = fixed_b3 = 40
@@ -289,6 +295,12 @@ def main():
     z2 = func_z2(w2, x2)
     aa2 = func_aa2(w2)
     ab2 = func_ab2(thedate, v2, fixed_b4, fixed_b5)
+    ac2 = func_ac2(ab2)
+    ad2 = func_ad2(fixed_b3, t2, ac2)
+    ae2 = func_ae2(ad2)
+    af2 = func_af2(ae2)
+    ag2 = func_ag2(ae2, af2)
+    ah2 = func_ah2(fixed_b3, ac2, ad2, t2)
 
     print(f"{f2=}")
     print(f"{g2=}")
@@ -314,6 +326,12 @@ def main():
     print(f"{z2=}, z2={dayfraction2dateformat(z2)}")
     print(f"{aa2=}")
     print(f"{ab2=}")
+    print(f"{ac2=}")
+    print(f"{ad2=}")
+    print(f"{ae2=}")
+    print(f"{af2=}")
+    print(f"{ag2=}")
+    print(f"{ah2=}")
 
 if __name__ == '__main__':
     main()
