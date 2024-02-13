@@ -1,3 +1,9 @@
+2024-02-13
+==========
+
+- finihed coding all the cells
+- do the function that just gives azimuth and alt
+
 2024-02-04
 ==========
 
