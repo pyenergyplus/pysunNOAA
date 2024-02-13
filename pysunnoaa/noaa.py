@@ -187,26 +187,55 @@ def solar_zenith_angle_deg(latitude, sun_declin_deg_value, hour_angle_deg_value)
     return math.degrees(math.acos(math.sin(math.radians(fixed_b3)) * math.sin(math.radians(t2)) + math.cos(math.radians(fixed_b3)) * math.cos(math.radians(t2)) * math.cos(math.radians(ac2))))
 
 def solar_elevation_angle_deg(solar_zenith_angle_deg_value):
-    """26. ae2"""
+    """25. ae2"""
     ad2 = solar_zenith_angle_deg_value
     return 90 - ad2
 
 
 def approx_atmospheric_refraction_deg(solar_elevation_angle_deg_value):
-    """25. af2"""
+    """26. af2"""
     ae2 = solar_elevation_angle_deg_value
     if(ae2>85):
         result = 0
     elif(ae2>5):
-        result = 58.1/math.tan(math.radians(ae2))-0.07/math.power(math.tan(math.radians(ae2)),3)+0.000086/math.power(math.tan(math.radians(ae2)),5)
-    elif(ae2>-0.575):
-        result = 1735+ae2*(-518.2+ae2*(103.4+ae2*(-12.79+ae2*0.711)))
+        result = 58.1 / math.tan(math.radians(ae2)) - 0.07 / math.power(math.tan(math.radians(ae2)),3) + 0.000086 / math.power(math.tan(math.radians(ae2)),5)
+    elif(ae2> - 0.575):
+        result = 1735 + ae2 * ( - 518.2 + ae2 * (103.4 + ae2 * ( -12.79 + ae2 * 0.711)))
     else:
-        result = -20.772/math.tan(math.radians(ae2))
-            
-        
-    
+        result = -20.772 / math.tan(math.radians(ae2))
     return result / 3600
+
+
+def solar_elevation_corrected_for_atm_refraction_deg(solar_elevation_angle_deg_value, approx_atmospheric_refraction_deg_value):
+    """27. ag2"""
+    ae2 = solar_elevation_angle_deg_value
+    af2 = approx_atmospheric_refraction_deg_value
+    return ae2 + af2
+
+
+def solar_azimuth_angle_deg_cw_from_n(latitude, hour_angle_deg, solar_zenith_angle_deg_value, sun_declin_deg_value):
+    """28. ah2"""
+    fixed_b3 = latitude
+    ac2 = hour_angle_deg
+    ad2 = solar_zenith_angle_deg_value
+    t2 = sun_declin_deg_value
+    temp1 = ((math.sin(math.radians(fixed_b3)) * math.cos(math.radians(ad2))) - math.sin(math.radians(t2))) / (math.cos(math.radians(fixed_b3)) * math.sin(math.radians(ad2)))
+    if(ac2>0):
+        return operator.mod(
+            math.degrees(
+                math.acos(
+                    temp1)
+                )+180,360
+            )
+    else:
+        return operator.mod(
+            540-math.degrees(
+                math.acos(
+                    temp1)
+                ),360
+            )
+    
+
 
 func_f2 = julianday #1
 func_g2 = juliancentury #2
@@ -229,6 +258,7 @@ func_x2 = solar_noon_lst #18
 func_y2 = sunrise_time_lst #19
 func_z2 = sunset_time_lst #20
 func_aa2 = sunlight_duration_minutes #21
+func_ab2 = true_solar_time_min #22
 
 def main():
     latitude = fixed_b3 = 40
@@ -258,6 +288,7 @@ def main():
     y2 = func_y2(w2, x2)
     z2 = func_z2(w2, x2)
     aa2 = func_aa2(w2)
+    ab2 = func_ab2(thedate, v2, fixed_b4, fixed_b5)
 
     print(f"{f2=}")
     print(f"{g2=}")
@@ -282,6 +313,7 @@ def main():
     print(f"{z2=}")
     print(f"{z2=}, z2={dayfraction2dateformat(z2)}")
     print(f"{aa2=}")
+    print(f"{ab2=}")
 
 if __name__ == '__main__':
     main()

@@ -362,3 +362,26 @@ def test_solar_elevation_angle_deg(solar_zenith_angle_deg_value, expected):
 def test_approx_atmospheric_refraction_deg(solar_elevation_angle_deg_value, expected):
     result = noaa.approx_atmospheric_refraction_deg(solar_elevation_angle_deg_value)
     almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "solar_elevation_angle_deg_value, approx_atmospheric_refraction_deg_value, expected",
+    [
+    (-25.245718494866, 0.0122365205193627, -25.2334819743467), # solar_elevation_angle_deg_value, approx_atmospheric_refraction_deg_value, expected
+    (-5.24086479367834, 0.0629045265211758, -5.17796026715717), # solar_elevation_angle_deg_value, approx_atmospheric_refraction_deg_value, expected
+    ]
+)
+def test_solar_elevation_corrected_for_atm_refraction_deg(solar_elevation_angle_deg_value, approx_atmospheric_refraction_deg_value, expected):
+    result = noaa.solar_elevation_corrected_for_atm_refraction_deg(solar_elevation_angle_deg_value, approx_atmospheric_refraction_deg_value)
+    almostequal(result, expected)
+
+@pytest.mark.parametrize(
+    "latitude, hour_angle_deg, solar_zenith_angle_deg_value, sun_declin_deg_value, expected",
+    [
+    (40, 166.073423039819, 115.245718494866, 23.4383121595139, 345.86910228316), # latitude, hour_angle_deg, solar_zenith_angle_deg_value, sun_declin_deg_value, expected
+    (37.4219444444444, -97.1208394019004, 95.2408647936783, 0.66936449061751, 85.1264242410581), # latitude, hour_angle_deg, solar_zenith_angle_deg_value, sun_declin_deg_value, expected
+    (40, -178.928841894617, 116.553762119181, 23.4383706192869, 1.09867118388445), # latitude, hour_angle_deg, solar_zenith_angle_deg_value, sun_declin_deg_value, expected
+    ]
+)
+def test_solar_azimuth_angle_deg_cw_from_n(latitude, hour_angle_deg, solar_zenith_angle_deg_value, sun_declin_deg_value, expected):
+    result = noaa.solar_azimuth_angle_deg_cw_from_n(latitude, hour_angle_deg, solar_zenith_angle_deg_value, sun_declin_deg_value)
+    almostequal(result, expected)
