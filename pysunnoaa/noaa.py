@@ -1,6 +1,7 @@
 """All the functions to calculate the sun postion using the NOAA spreadsheet"""
 
 import datetime
+import itertools
 import operator
 import math
 import julian
@@ -57,26 +58,27 @@ def juliancentury(jul_day):
     return (jul_day - 2451545) / 36525
 
 
-def geom_mean_long_sun_deg(jul_century):
+def geom_mean_long_sun_deg(juliancentury_value):
     """3. i2"""
-    return operator.mod(
-        (280.46646 + jul_century * (36000.76983 + jul_century * 0.0003032)), 360
-    )
+    g2 = juliancentury_value
+    return operator.mod((280.46646 + g2 * (36000.76983 + g2 * 0.0003032)), 360)
 
 
-def geom_mean_anom_sun_deg(jul_century):
+def geom_mean_anom_sun_deg(juliancentury_value):
     """4. j2"""
-    return 357.52911 + jul_century * (35999.05029 - 0.0001537 * jul_century)
+    g2 = juliancentury_value
+    return 357.52911 + g2 * (35999.05029 - 0.0001537 * g2)
 
 
-def eccent_earth_orbit(jul_century):
+def eccent_earth_orbit(juliancentury_value):
     """5. k2"""
-    return 0.016708634 - jul_century * (0.000042037 + 0.0000001267 * jul_century)
+    g2 = juliancentury_value
+    return 0.016708634 - g2 * (0.000042037 + 0.0000001267 * g2)
 
 
-def sun_eq_of_ctr(jul_century, geom_mean_anom_sun_value):
+def sun_eq_of_ctr(juliancentury_value, geom_mean_anom_sun_value):
     """6. l2"""
-    g2 = jul_century
+    g2 = juliancentury_value
     j2 = geom_mean_anom_sun_value
     return (
         math.sin(math.radians(j2)) * (1.914602 - g2 * (0.004817 + 0.000014 * g2))
@@ -186,10 +188,10 @@ def ha_sunrise_deg(latitude, sun_declin_deg_value):
     )
 
 
-def solar_noon_lst(longitude, time_zone, eq_of_time_minutes_value):
+def solar_noon_lst(longitude, timezone, eq_of_time_minutes_value):
     """18. x2"""
     fixed_b4 = longitude
-    fixed_b5 = time_zone
+    fixed_b5 = timezone
     v2 = eq_of_time_minutes_value
     return (720 - 4 * fixed_b4 - v2 + fixed_b5 * 60) / 1440
 
@@ -214,13 +216,13 @@ def sunlight_duration_minutes(ha_sunrise_deg_value):
     return 8 * w2
 
 
-def true_solar_time_min(thedate, eq_of_time_minutes_value, longitude, time_zone):
+def true_solar_time_min(thedate, eq_of_time_minutes_value, longitude, timezone):
     """22. ab2"""
     time_past_local_midnight = datetime2dayfraction(thedate)
     e2 = time_past_local_midnight
     v2 = eq_of_time_minutes_value
     fixed_b4 = longitude
-    fixed_b5 = time_zone
+    fixed_b5 = timezone
     return operator.mod(e2 * 1440 + v2 + 4 * fixed_b4 - 60 * fixed_b5, 1440)
 
 
@@ -262,8 +264,8 @@ def approx_atmospheric_refraction_deg(solar_elevation_angle_deg_value):
     elif ae2 > 5:
         result = (
             58.1 / math.tan(math.radians(ae2))
-            - 0.07 / math.power(math.tan(math.radians(ae2)), 3)
-            + 0.000086 / math.power(math.tan(math.radians(ae2)), 5)
+            - 0.07 / math.pow(math.tan(math.radians(ae2)), 3)
+            + 0.000086 / math.pow(math.tan(math.radians(ae2)), 5)
         )
     elif ae2 > -0.575:
         result = 1735 + ae2 * (-518.2 + ae2 * (103.4 + ae2 * (-12.79 + ae2 * 0.711)))
@@ -282,11 +284,11 @@ def solar_elevation_corrected_for_atm_refraction_deg(
 
 
 def solar_azimuth_angle_deg_cw_from_n(
-    latitude, hour_angle_deg, solar_zenith_angle_deg_value, sun_declin_deg_value
+    latitude, hour_angle_deg_value, solar_zenith_angle_deg_value, sun_declin_deg_value
 ):
     """28. ah2"""
     fixed_b3 = latitude
-    ac2 = hour_angle_deg
+    ac2 = hour_angle_deg_value
     ad2 = solar_zenith_angle_deg_value
     t2 = sun_declin_deg_value
     temp1 = (
@@ -299,12 +301,76 @@ def solar_azimuth_angle_deg_cw_from_n(
         return operator.mod(540 - math.degrees(math.acos(temp1)), 360)
 
 
+def datetimerange(start, stop, minutes=1):
+    endlesstime = (
+        start + datetime.timedelta(minutes=m)
+        for m in itertools.count(start=0, step=minutes)
+    )
+    generator = itertools.takewhile(lambda x: x < stop, endlesstime)
+    return generator
+
+
+def sunposition(latitude, longitude, timezone, thedate):
+    jul_day = julianday(thedate, timezone)
+    juliancentury_value = juliancentury(jul_day)
+    geom_mean_long_sun_deg_value = geom_mean_long_sun_deg(juliancentury_value)
+    geom_mean_anom_sun_deg_value = geom_mean_anom_sun_deg(juliancentury_value)
+    eccent_earth_orbit_value = eccent_earth_orbit(juliancentury_value)
+    mean_obliq_ecliptic_deg_value = mean_obliq_ecliptic_deg(juliancentury_value)
+    obliq_corr_deg_value = obliq_corr_deg(
+        juliancentury_value, mean_obliq_ecliptic_deg_value
+    )
+    var_y_value = var_y(obliq_corr_deg_value)
+    eq_of_time_minutes_value = eq_of_time_minutes(
+        geom_mean_long_sun_deg_value,
+        geom_mean_anom_sun_deg_value,
+        eccent_earth_orbit_value,
+        var_y_value,
+    )
+    true_solar_time_min_value = true_solar_time_min(
+        thedate, eq_of_time_minutes_value, longitude, timezone
+    )
+    geom_mean_anom_sun_value = geom_mean_anom_sun_deg(juliancentury_value)
+    sun_eq_of_ctr_value = sun_eq_of_ctr(juliancentury_value, geom_mean_anom_sun_value)
+    sun_true_long_deg_value = sun_true_long_deg(
+        geom_mean_long_sun_deg_value, sun_eq_of_ctr_value
+    )
+    sun_app_long_deg_value = sun_app_long_deg(
+        juliancentury_value, sun_true_long_deg_value
+    )
+    sun_declin_deg_value = sun_declin_deg(sun_app_long_deg_value, obliq_corr_deg_value)
+    hour_angle_deg_value = hour_angle_deg(true_solar_time_min_value)
+    solar_zenith_angle_deg_value = solar_zenith_angle_deg(
+        latitude, sun_declin_deg_value, hour_angle_deg_value
+    )
+    sun_declin_deg_value = sun_declin_deg(sun_app_long_deg_value, obliq_corr_deg_value)
+    solar_elevation_angle_deg_value = solar_elevation_angle_deg(
+        solar_zenith_angle_deg_value
+    )
+    approx_atmospheric_refraction_deg_value = approx_atmospheric_refraction_deg(
+        solar_elevation_angle_deg_value
+    )
+    sunazm = solar_azimuth_angle_deg_cw_from_n(
+        latitude,
+        hour_angle_deg_value,
+        solar_zenith_angle_deg_value,
+        sun_declin_deg_value,
+    )
+    sunalt = solar_elevation_corrected_for_atm_refraction_deg(
+        solar_elevation_angle_deg_value, approx_atmospheric_refraction_deg_value
+    )
+    return sunalt, sunazm
+
+
+def sunpositions(latitude, longitude, timezone, thedates):
+    for thedate in thedates:
+        yield sunposition(latitude, longitude, timezone, thedate)
 
 
 def main():
     latitude = fixed_b3 = 40
     longitude = fixed_b4 = -105
-    time_zone = fixed_b5 = -6
+    timezone = fixed_b5 = -6
     thedate = b7 = d2 = datetime.datetime(2010, 6, 21, 0, 6)
 
     func_f2 = julianday  # 1
@@ -337,7 +403,7 @@ def main():
     func_ah2 = solar_azimuth_angle_deg_cw_from_n  # 28
 
     e2 = thedate
-    f2 = func_f2(e2, time_zone)
+    f2 = func_f2(e2, timezone)
     g2 = func_g2(f2)
     i2 = func_i2(g2)
     # h2 -> nothin in cell
