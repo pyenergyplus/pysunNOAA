@@ -7,6 +7,16 @@ final usable functions in nooaa.py:
 - sunposition
 - sunpositions
 
+Pause coding here and do the following
+
+- User Documentation
+- Function documentation
+- mypy for typechecking
+
+Later do:
+
+- Develop other usable functions
+
 2024-02-13
 ==========
 
