@@ -12,6 +12,14 @@ pysunnoaa.cli module
    :undoc-members:
    :show-inheritance:
 
+pysunnoaa.noaa module
+---------------------
+
+.. automodule:: pysunnoaa.noaa
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pysunnoaa.pysunnoaa module
 --------------------------
 
