@@ -1,3 +1,12 @@
+2024-02-15
+==========
+
+final usable functions in nooaa.py:
+
+- datetimerange
+- sunposition
+- sunpositions
+
 2024-02-13
 ==========
 
