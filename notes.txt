@@ -1,2 +1,5 @@
 python3 -m venv ~/venvs/pysunnoaa
 source ~/venvs/pysunnoaa/bin/activate 
+
+python3 -m venv ~/venvs/pysunnoaa_frompoet
+source ~/venvs/pysunnoaa_frompoet/bin/activate 
