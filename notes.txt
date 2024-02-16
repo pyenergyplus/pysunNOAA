@@ -1,3 +1,16 @@
+moving to poetry for install and virtual env. Some observations
+
+- twine needs setup.py
+- if setup.py is there, pypi will not use toml
+- bupmversion will not update toml
+- for pypi
+    - need to bump using poetry - google this
+    - need to build and publish using poetry 
+- right now the pysunnoaa file is a mess. pypi is not showing classifiers
+- make a pure poetry project to see hwat it generates - not useful
+- hand edit the toml file -> https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
+- looks like I need to use basic cookiecutter and then add poetry stuff to it :-(
+
 python3 -m venv ~/venvs/pysunnoaa
 source ~/venvs/pysunnoaa/bin/activate 
 
