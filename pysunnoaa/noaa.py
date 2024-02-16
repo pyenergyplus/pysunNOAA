@@ -316,7 +316,7 @@ def datetimerange(start, stop, minutes=1):
     return generator
 
 
-def sunposition(latitude, longitude, timezone, thedate):
+def sunposition(latitude, longitude, timezone, thedate, atm_corr=True):
     jul_day = julianday(thedate, timezone)
     juliancentury_value = juliancentury(jul_day)
     geom_mean_long_sun_deg_value = geom_mean_long_sun_deg(juliancentury_value)
@@ -365,12 +365,16 @@ def sunposition(latitude, longitude, timezone, thedate):
     sunalt = solar_elevation_corrected_for_atm_refraction_deg(
         solar_elevation_angle_deg_value, approx_atmospheric_refraction_deg_value
     )
-    return sunalt, sunazm
+    sunalt_nocorr = solar_elevation_angle_deg(solar_zenith_angle_deg_value)
+    if atm_corr:
+        return sunalt, sunazm
+    else:
+        return sunalt_nocorr, sunazm
 
 
-def sunpositions(latitude, longitude, timezone, thedates):
+def sunpositions(latitude, longitude, timezone, thedates, atm_corr=True):
     for thedate in thedates:
-        yield sunposition(latitude, longitude, timezone, thedate)
+        yield sunposition(latitude, longitude, timezone, thedate, atm_corr=atm_corr)
 
 
 def main():
