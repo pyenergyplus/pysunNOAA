@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pysunnoaa"
-version = "0.1.6"
+version = "0.1.7"
 description = "python implementation of NOAA's Solar Position Calculators"
 authors = ["Santosh Philip <santosh@noemail.com>"]
 license = "Mozilla Public License, v. 2.0"
