@@ -699,34 +699,40 @@ def test_datetimerange(start, stop, minutes_step, expected):
             40,
             -105,
             -6,
-            datetime.datetime(2010, 6, 21, 0, 6), True, 
+            datetime.datetime(2010, 6, 21, 0, 6),
+            True,
             (-25.2334819743467, 345.86910228316),
         ),  # latitude, longitude, timezone, thedate, atm_corr, expected
         (
             37.4219444444444,
             -122.079583333333,
             -8,
-            datetime.datetime(2023, 9, 21, 5, 33), True, 
+            datetime.datetime(2023, 9, 21, 5, 33),
+            True,
             (-5.17796026715717, 85.1264242410581),
         ),  # latitude, longitude, timezone, thedate, atm_corr, expected
         (
             40,
             -105,
             -6,
-            datetime.datetime(2010, 6, 21, 0, 6), False, 
+            datetime.datetime(2010, 6, 21, 0, 6),
+            False,
             (-25.245718494866, 345.86910228316),
         ),  # latitude, longitude, timezone, thedate, atm_corr, expected
         (
             37.4219444444444,
             -122.079583333333,
             -8,
-            datetime.datetime(2023, 9, 21, 5, 33), False, 
+            datetime.datetime(2023, 9, 21, 5, 33),
+            False,
             (-5.24086479367834, 85.1264242410581),
         ),  # latitude, longitude, timezone, thedate, atm_corr, expected
     ],
 )
 def test_sunposition(latitude, longitude, timezone, thedate, atm_corr, expected):
-    result_alt, result_azm = noaa.sunposition(latitude, longitude, timezone, thedate, atm_corr)
+    result_alt, result_azm = noaa.sunposition(
+        latitude, longitude, timezone, thedate, atm_corr
+    )
     expected_alt, expected_azm = expected
     assert almostequal(result_alt, expected_alt)
     assert almostequal(result_azm, expected_azm)
@@ -744,7 +750,7 @@ def test_sunposition(latitude, longitude, timezone, thedate, atm_corr, expected)
                 datetime.datetime(2010, 6, 21, 0, 24),
                 6,
             ),
-            True, 
+            True,
             [
                 (float(row[0]), float(row[1]))
                 for row in csv.reader(
@@ -767,7 +773,7 @@ def test_sunposition(latitude, longitude, timezone, thedate, atm_corr, expected)
                 datetime.datetime(2010, 6, 22, 0, 0),
                 6,
             ),
-            True, 
+            True,
             [
                 (float(row[0]), float(row[1]))
                 for row in csv.reader(
@@ -1026,7 +1032,7 @@ def test_sunposition(latitude, longitude, timezone, thedate, atm_corr, expected)
                 datetime.datetime(2023, 9, 21, 5, 36),
                 1,
             ),
-            True, 
+            True,
             [
                 (float(row[0]), float(row[1]))
                 for row in csv.reader(
@@ -1049,7 +1055,7 @@ def test_sunposition(latitude, longitude, timezone, thedate, atm_corr, expected)
                 datetime.datetime(2023, 9, 21, 17, 50),
                 1,
             ),
-            True, 
+            True,
             [
                 (float(row[0]), float(row[1]))
                 for row in csv.reader(
@@ -1797,10 +1803,7 @@ def test_sunposition(latitude, longitude, timezone, thedate, atm_corr, expected)
             ],
         ),  # latitude, longitude, timezone, thedates, atm_corr, expected
         # expected is saved from spreadsheet
-
-
-# - atm_corr = False below
-
+        # - atm_corr = False below
         (
             40,
             -105,
@@ -1810,7 +1813,7 @@ def test_sunposition(latitude, longitude, timezone, thedate, atm_corr, expected)
                 datetime.datetime(2010, 6, 21, 0, 24),
                 6,
             ),
-            False, 
+            False,
             [
                 (float(row[0]), float(row[1]))
                 for row in csv.reader(
@@ -1833,7 +1836,7 @@ def test_sunposition(latitude, longitude, timezone, thedate, atm_corr, expected)
                 datetime.datetime(2010, 6, 22, 0, 0),
                 6,
             ),
-            False, 
+            False,
             [
                 (float(row[0]), float(row[1]))
                 for row in csv.reader(
@@ -2092,7 +2095,7 @@ def test_sunposition(latitude, longitude, timezone, thedate, atm_corr, expected)
                 datetime.datetime(2023, 9, 21, 5, 36),
                 1,
             ),
-            False, 
+            False,
             [
                 (float(row[0]), float(row[1]))
                 for row in csv.reader(
@@ -2115,7 +2118,7 @@ def test_sunposition(latitude, longitude, timezone, thedate, atm_corr, expected)
                 datetime.datetime(2023, 9, 21, 17, 50),
                 1,
             ),
-            False, 
+            False,
             [
                 (float(row[0]), float(row[1]))
                 for row in csv.reader(
