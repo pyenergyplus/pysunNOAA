@@ -2873,3 +2873,44 @@ def test_sunpositions(latitude, longitude, timezone, thedates, atm_corr, expecte
     for (r1, r2), (e1, e2) in zip(result, expected):
         assert almostequal(r1, e1)
         assert almostequal(r2, e2)
+
+
+@pytest.mark.parametrize(
+    "latitude, longitude, timezone, thedate, expected",
+    [
+        (
+            40,
+            -105,
+            -6,
+            datetime.datetime(2010, 6, 21),
+            datetime.datetime(2010, 6, 21, 5, 31, 15, 842680),
+        ),  # latitude, longitude, timezone, thedate, expected
+        (
+            37.4219444444444,
+            -122.079583333333,
+            -8,
+            datetime.datetime(2023, 9, 21),
+            datetime.datetime(2023, 9, 21, 5, 55, 2, 693853),
+        ),  # latitude, longitude, timezone, thedate, expected
+    ],
+)
+def test_sunrise(latitude, longitude, timezone, thedate, expected):
+    result = noaa.sunrise(latitude, longitude, timezone, thedate)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "latitude, longitude, timezone, thedate, expected",
+    [
+        (
+            40,
+            -105,
+            -6,
+            datetime.datetime(2010, 6, 21),
+            datetime.datetime(2010, 6, 21, 20, 32, 8, 805539),
+        ),  # latitude, longitude, timezone, thedate, expected
+    ],
+)
+def test_sunset(latitude, longitude, timezone, thedate, expected):
+    result = noaa.sunset(latitude, longitude, timezone, thedate)
+    assert result == expected

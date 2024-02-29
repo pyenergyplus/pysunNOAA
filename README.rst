@@ -8,6 +8,9 @@ Python implementation of NOAA's Solar Position Calculators
 
 **pysunNOAA** is based on the spreadsheet `NOAA_Solar_Calculations_day.xls <https://www.gml.noaa.gov/grad/solcalc/NOAA_Solar_Calculations_day.xls>`_ . All the calculation cells in row 2 of the spreadsheet are implemented in pysunNOAA. This is a work in progress. But it is fully usable at this point
 
+Sun Position
+------------
+
 Here is what it can do::
 
     import datetime
@@ -34,6 +37,9 @@ The above calculation is corrected for atmospheric diffraction. We can also do t
     print(f"{altitude=}, {azimuth=}")
     
     >> altitude=47.346932081680364, azimuth=98.30691558695895
+
+Many Sun Positions
+------------------
 
 Let us take a look at generating multiple sun positions for a time series. First we have to generate the time series::
 
@@ -98,5 +104,19 @@ Both ``noaa.datetimerange`` and ``noaa.sunpositions`` are generators. Once you l
     altitude=54.05415607848319, azimuth=105.82830623146941
     altitude=55.88497413825557, azimuth=108.23537482765607
     altitude=57.689656999063025, azimuth=110.82001062044083
+
+Sunrise and Sunset
+------------------
+
+Another useful thing is to be able to calculate sunset and sunrise. Here we go::
+
+    sunrise = noaa.sunrise(40, -105, -6, datetime.datetime(2010, 6, 21))
+    sunset = noaa.sunset(40, -105, -6, datetime.datetime(2010, 6, 21))
+    print(f"{sunrise=}")
+    print(f"{sunset=}")
+
+    >> sunrise=datetime.datetime(2010, 6, 21, 5, 31, 15, 842680)
+    >> sunset=datetime.datetime(2010, 6, 21, 20, 32, 8, 805539)
+
 
 That's all for now.

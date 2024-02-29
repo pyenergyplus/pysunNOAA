@@ -82,10 +82,10 @@ def eccent_earth_orbit(juliancentury_value):
     return 0.016708634 - g2 * (0.000042037 + 0.0000001267 * g2)
 
 
-def sun_eq_of_ctr(juliancentury_value, geom_mean_anom_sun_value):
+def sun_eq_of_ctr(juliancentury_value, geom_mean_anom_sun_deg_value):
     """6. l2"""
     g2 = juliancentury_value
-    j2 = geom_mean_anom_sun_value
+    j2 = geom_mean_anom_sun_deg_value
     return (
         math.sin(math.radians(j2)) * (1.914602 - g2 * (0.004817 + 0.000014 * g2))
         + math.sin(math.radians(2 * j2)) * (0.019993 - 0.000101 * g2)
@@ -336,8 +336,10 @@ def sunposition(latitude, longitude, timezone, thedate, atm_corr=True):
     true_solar_time_min_value = true_solar_time_min(
         thedate, eq_of_time_minutes_value, longitude, timezone
     )
-    geom_mean_anom_sun_value = geom_mean_anom_sun_deg(juliancentury_value)
-    sun_eq_of_ctr_value = sun_eq_of_ctr(juliancentury_value, geom_mean_anom_sun_value)
+    geom_mean_anom_sun_deg_value = geom_mean_anom_sun_deg(juliancentury_value)
+    sun_eq_of_ctr_value = sun_eq_of_ctr(
+        juliancentury_value, geom_mean_anom_sun_deg_value
+    )
     sun_true_long_deg_value = sun_true_long_deg(
         geom_mean_long_sun_deg_value, sun_eq_of_ctr_value
     )
@@ -375,6 +377,57 @@ def sunposition(latitude, longitude, timezone, thedate, atm_corr=True):
 def sunpositions(latitude, longitude, timezone, thedates, atm_corr=True):
     for thedate in thedates:
         yield sunposition(latitude, longitude, timezone, thedate, atm_corr=atm_corr)
+
+
+def _forsunrisesunset(latitude, longitude, timezone, thedate):
+
+    jul_day = julianday(thedate, timezone)
+    juliancentury_value = juliancentury(jul_day)
+    geom_mean_anom_sun_deg_value = geom_mean_anom_sun_deg(juliancentury_value)
+    sun_eq_of_ctr_value = sun_eq_of_ctr(
+        juliancentury_value, geom_mean_anom_sun_deg_value
+    )
+    geom_mean_long_sun_deg_value = geom_mean_long_sun_deg(juliancentury_value)
+    sun_true_long_deg_value = sun_true_long_deg(
+        geom_mean_long_sun_deg_value, sun_eq_of_ctr_value
+    )
+    mean_obliq_ecliptic_deg_value = mean_obliq_ecliptic_deg(juliancentury_value)
+    sun_app_long_deg_value = sun_app_long_deg(
+        juliancentury_value, sun_true_long_deg_value
+    )
+    obliq_corr_deg_value = obliq_corr_deg(
+        juliancentury_value, mean_obliq_ecliptic_deg_value
+    )
+    sun_declin_deg_value = sun_declin_deg(sun_app_long_deg_value, obliq_corr_deg_value)
+    ha_sunrise_deg_value = ha_sunrise_deg(latitude, sun_declin_deg_value)
+    eccent_earth_orbit_value = eccent_earth_orbit(juliancentury_value)
+    var_y_value = var_y(obliq_corr_deg_value)
+    eq_of_time_minutes_value = eq_of_time_minutes(
+        geom_mean_long_sun_deg_value,
+        geom_mean_anom_sun_deg_value,
+        eccent_earth_orbit_value,
+        var_y_value,
+    )
+    solar_noon_lst_value = solar_noon_lst(longitude, timezone, eq_of_time_minutes_value)
+    return ha_sunrise_deg_value, solar_noon_lst_value
+
+
+def sunrise(latitude, longitude, timezone, thedate):
+    ha_sunrise_deg_value, solar_noon_lst_value = _forsunrisesunset(
+        latitude, longitude, timezone, thedate
+    )
+    return dayfraction2datetime(
+        sunrise_time_lst(ha_sunrise_deg_value, solar_noon_lst_value), thedate
+    )
+
+
+def sunset(latitude, longitude, timezone, thedate):
+    ha_sunrise_deg_value, solar_noon_lst_value = _forsunrisesunset(
+        latitude, longitude, timezone, thedate
+    )
+    return dayfraction2datetime(
+        sunset_time_lst(ha_sunrise_deg_value, solar_noon_lst_value), thedate
+    )
 
 
 def main():
