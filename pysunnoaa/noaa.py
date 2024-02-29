@@ -379,7 +379,8 @@ def sunpositions(latitude, longitude, timezone, thedates, atm_corr=True):
         yield sunposition(latitude, longitude, timezone, thedate, atm_corr=atm_corr)
 
 
-def sunrise(latitude, longitude, timezone, thedate):
+def _forsunrisesunset(latitude, longitude, timezone, thedate):
+
     jul_day = julianday(thedate, timezone)
     juliancentury_value = juliancentury(jul_day)
     geom_mean_anom_sun_deg_value = geom_mean_anom_sun_deg(juliancentury_value)
@@ -408,8 +409,24 @@ def sunrise(latitude, longitude, timezone, thedate):
         var_y_value,
     )
     solar_noon_lst_value = solar_noon_lst(longitude, timezone, eq_of_time_minutes_value)
+    return ha_sunrise_deg_value, solar_noon_lst_value
+
+
+def sunrise(latitude, longitude, timezone, thedate):
+    ha_sunrise_deg_value, solar_noon_lst_value = _forsunrisesunset(
+        latitude, longitude, timezone, thedate
+    )
     return dayfraction2datetime(
         sunrise_time_lst(ha_sunrise_deg_value, solar_noon_lst_value), thedate
+    )
+
+
+def sunset(latitude, longitude, timezone, thedate):
+    ha_sunrise_deg_value, solar_noon_lst_value = _forsunrisesunset(
+        latitude, longitude, timezone, thedate
+    )
+    return dayfraction2datetime(
+        sunset_time_lst(ha_sunrise_deg_value, solar_noon_lst_value), thedate
     )
 
 
